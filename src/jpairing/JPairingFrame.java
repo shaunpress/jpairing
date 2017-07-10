@@ -50,7 +50,6 @@ public class JPairingFrame extends javax.swing.JFrame implements TableModelListe
         String columnName = model.getColumnName(column);
         Object data = model.getValueAt(row, column);
 
-        System.out.println(columnName) ;
         // Do something with the data...
     }
      
@@ -514,7 +513,7 @@ public class JPairingFrame extends javax.swing.JFrame implements TableModelListe
                 
                 line_count += 1;
                 input_line = list_in.get(line_count).trim();
-                System.out.println(input_line);
+                
             }
             
         }
