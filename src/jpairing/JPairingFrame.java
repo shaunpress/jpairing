@@ -234,6 +234,11 @@ public class JPairingFrame extends javax.swing.JFrame implements TableModelListe
         jTabbedPane1.addTab("Pairing Page", jPanel2);
 
         standingsOutputButton.setText("Standings");
+        standingsOutputButton.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                standingsOutputButtonActionPerformed(evt);
+            }
+        });
 
         crosstableOutputPrint.setText("Crosstable");
         crosstableOutputPrint.addActionListener(new java.awt.event.ActionListener() {
@@ -473,9 +478,16 @@ public class JPairingFrame extends javax.swing.JFrame implements TableModelListe
     private void crosstableOutputPrintActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_crosstableOutputPrintActionPerformed
         // Output crosstable as string
         String crosstable_text = "Place \tPlayer Name \tRating \t";
-        crosstable_text += playerDataModel.player_crosstable_list(5);
+        crosstable_text += playerDataModel.player_crosstable_list(2);
         jTextPane1.setText(crosstable_text);
     }//GEN-LAST:event_crosstableOutputPrintActionPerformed
+
+    private void standingsOutputButtonActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_standingsOutputButtonActionPerformed
+        // Output standings as string
+        String standingsText = "Place \tPlayer Name \tRating \tMP \tVP \tVP% \tWins \n";
+        standingsText += playerDataModel.player_standing_list(2);
+        jTextPane1.setText(standingsText);
+    }//GEN-LAST:event_standingsOutputButtonActionPerformed
 
     private void readTournamentFile(Path path) {
         // Reads from a aps format file and creates objects etc
