@@ -115,7 +115,7 @@ public class playerTableModel extends AbstractTableModel {
             float player_score[] = player.get_player_score_n(round_no);
             int player_wins = player.get_player_wins_n(round_no);
             
-            StandingDetail standing_data = new StandingDetail();
+            StandingDetail standing_data = new StandingDetail(player.getPairingId(), player.getPlayerName(), player.getRating(), player_score[0], player_score[1], player_score[2], 0.0f, player_wins );
             
             
             standing_list.add(standing_data);
@@ -131,17 +131,52 @@ public class playerTableModel extends AbstractTableModel {
         
         String output_string = "";
         
+        for (PlayerClass player:data) {
+            float player_percent = 0.0f;
+            float player_score[] = player.get_player_score_n(round_no);
+            int player_wins = player.get_player_wins_n(round_no);
+            
+            if (player_score[2] != 0.0f) {
+                player_percent = player_score[1]/player_score[2];               
+            }
+            
+            StandingDetail standing_data = new StandingDetail(player.getPairingId(), player.getPlayerName(), player.getRating(), player_score[0], player_score[1], player_score[2], player_percent, player_wins );
+            
+            
+            output_string += player.getPlayerName()+"\t"+player.getRating()+"\t";
+            output_string += Float.toString(player_score[0])+"\t"+Float.toString(player_score[1])+"\t";
+            output_string += Float.toString(player_percent)+"\t";
+            output_string += Integer.toString(player_wins)+"\n";
+            
+            
+        }
+        
         return output_string;        
     }
     
     private class StandingDetail {
+
+        public StandingDetail(int player_id, String player_name, int player_rating, float score_total, float vp_total, float vp_total_total, float percent, float wins) {
+            this.player_id = player_id;
+            this.player_name = player_name;
+            this.player_rating = player_rating;
+            this.score_total = score_total;
+            this.vp_total = vp_total;
+            this.vp_total_total = vp_total_total;
+            this.percent = percent;
+            this.wins = wins;
+        }
         int player_id;
         String player_name;
         int player_rating;
         float score_total;
-        int vp_total;
-        int vp_total_total;
+        float vp_total;
+        float vp_total_total;
+        float percent;
+        float wins;
     }
+    
+    
     
     
 }
