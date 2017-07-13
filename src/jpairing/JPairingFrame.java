@@ -194,6 +194,12 @@ public class JPairingFrame extends javax.swing.JFrame implements TableModelListe
 
         jLabel1.setText("Current Round");
 
+        roundSpinner.addChangeListener(new javax.swing.event.ChangeListener() {
+            public void stateChanged(javax.swing.event.ChangeEvent evt) {
+                roundSpinnerStateChanged(evt);
+            }
+        });
+
         javax.swing.GroupLayout jPanel2Layout = new javax.swing.GroupLayout(jPanel2);
         jPanel2.setLayout(jPanel2Layout);
         jPanel2Layout.setHorizontalGroup(
@@ -251,6 +257,7 @@ public class JPairingFrame extends javax.swing.JFrame implements TableModelListe
 
         printOutputButton.setText("Print");
 
+        jTextPane1.setFont(new java.awt.Font("Courier New", 0, 10)); // NOI18N
         jScrollPane2.setViewportView(jTextPane1);
 
         javax.swing.GroupLayout jPanel3Layout = new javax.swing.GroupLayout(jPanel3);
@@ -477,7 +484,7 @@ public class JPairingFrame extends javax.swing.JFrame implements TableModelListe
 
     private void crosstableOutputPrintActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_crosstableOutputPrintActionPerformed
         // Output crosstable as string
-        String crosstable_text = "Place \tPlayer Name \tRating \t";
+        String crosstable_text = "Place \tPlayer Name \tRating \n";
         crosstable_text += playerDataModel.player_crosstable_list(2);
         jTextPane1.setText(crosstable_text);
     }//GEN-LAST:event_crosstableOutputPrintActionPerformed
@@ -488,6 +495,15 @@ public class JPairingFrame extends javax.swing.JFrame implements TableModelListe
         standingsText += playerDataModel.player_standing_list(2);
         jTextPane1.setText(standingsText);
     }//GEN-LAST:event_standingsOutputButtonActionPerformed
+
+    private void roundSpinnerStateChanged(javax.swing.event.ChangeEvent evt) {//GEN-FIRST:event_roundSpinnerStateChanged
+        // TODO add your handling code here:
+        try {
+            roundSpinner.commitEdit();
+        } catch ( java.text.ParseException e ) { }
+        int value = (Integer) roundSpinner.getValue();
+        pairingDataModel.update_display(value);
+    }//GEN-LAST:event_roundSpinnerStateChanged
 
     private void readTournamentFile(Path path) {
         // Reads from a aps format file and creates objects etc
@@ -518,6 +534,7 @@ public class JPairingFrame extends javax.swing.JFrame implements TableModelListe
                 for (int i=1; i < result_data.length; i++) {
                     String[] round_data = result_data[i].split(";");
                     playerDataModel.addPlayerResult(player_id+1, i, round_data);
+                    pairingDataModel.loadPairing(playerDataModel.get_player(player_id),i,round_data);
                     
                     
                 }

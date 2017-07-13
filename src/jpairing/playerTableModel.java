@@ -6,6 +6,8 @@
 package jpairing;
 
 import java.util.ArrayList;
+import java.util.Comparator;
+import java.util.Collections;
 import javax.swing.table.AbstractTableModel;
 
 /**
@@ -65,6 +67,10 @@ public class playerTableModel extends AbstractTableModel {
         data = new ArrayList<PlayerClass>();
     }
     
+    public PlayerClass get_player(int player_id) {
+        return data.get(player_id);
+    }
+    
     public void addNewPlayer(String newData) {
         String[] fields = newData.split(";");
         PlayerClass newPlayer = new PlayerClass(0);
@@ -115,20 +121,34 @@ public class playerTableModel extends AbstractTableModel {
             float player_score[] = player.get_player_score_n(round_no);
             int player_wins = player.get_player_wins_n(round_no);
             
-            StandingDetail standing_data = new StandingDetail(player.getPairingId(), player.getPlayerName(), player.getRating(), player_score[0], player_score[1], player_score[2], 0.0f, player_wins );
+            StandingDetail standing_data = new StandingDetail(player, player_score[0], (int)player_score[1], (int)player_score[2], 0.0f, player_wins );
             
             
             standing_list.add(standing_data);
             
         }
         
-        standing_list.sort((o1,o2)->o1.vp_total-o2.vp_total);
+        Collections.sort(standing_list,new byStanding());
+        
+        int rank = 1;
+        for (StandingDetail standing_info:standing_list) {
+            
+            output_string += Integer.toString(rank)+"\t"+standing_info.player.getPlayerName()+"\t"+standing_info.player.getRating()+"\t";
+            for (int i = 0; i<round_no; i++) {
+                output_string += standing_info.player.get_round_result(i);
+            }
+            output_string += Float.toString(standing_info.score_total)+"\t"+Float.toString(standing_info.vp_total)+"\t";
+            output_string += Float.toString(standing_info.percent)+"\t";
+            output_string += Integer.toString(standing_info.wins)+"\n";
+            rank++;
+            
+        }
         
         return output_string;
     }
     
     public String player_standing_list(int round_no) {
-        
+        ArrayList<StandingDetail> standing_list = new ArrayList<StandingDetail>();
         String output_string = "";
         
         for (PlayerClass player:data) {
@@ -140,15 +160,18 @@ public class playerTableModel extends AbstractTableModel {
                 player_percent = player_score[1]/player_score[2];               
             }
             
-            StandingDetail standing_data = new StandingDetail(player.getPairingId(), player.getPlayerName(), player.getRating(), player_score[0], player_score[1], player_score[2], player_percent, player_wins );
-            
-            
-            output_string += player.getPlayerName()+"\t"+player.getRating()+"\t";
-            output_string += Float.toString(player_score[0])+"\t"+Float.toString(player_score[1])+"\t";
-            output_string += Float.toString(player_percent)+"\t";
-            output_string += Integer.toString(player_wins)+"\n";
-            
-            
+            StandingDetail standing_data = new StandingDetail(player, player_score[0], (int)player_score[1], (int)player_score[2], player_percent, player_wins );
+            standing_list.add(standing_data);
+        }
+        Collections.sort(standing_list,new byStanding());
+        
+        int rank = 0;
+        for (StandingDetail standing_info:standing_list) {
+            rank++;
+            output_string += Integer.toString(rank)+"\t"+standing_info.player.getPlayerName()+"\t"+standing_info.player.getRating()+"\t";
+            output_string += Float.toString(standing_info.score_total)+"\t"+Float.toString(standing_info.vp_total)+"\t";
+            output_string += Float.toString(standing_info.percent)+"\t";
+            output_string += Integer.toString(standing_info.wins)+"\n";
         }
         
         return output_string;        
@@ -156,25 +179,44 @@ public class playerTableModel extends AbstractTableModel {
     
     private class StandingDetail {
 
-        public StandingDetail(int player_id, String player_name, int player_rating, float score_total, float vp_total, float vp_total_total, float percent, float wins) {
-            this.player_id = player_id;
-            this.player_name = player_name;
-            this.player_rating = player_rating;
+        public StandingDetail(PlayerClass player, float score_total, int vp_total, int vp_total_total, float percent, int wins) {
+            this.player= player;
             this.score_total = score_total;
             this.vp_total = vp_total;
             this.vp_total_total = vp_total_total;
             this.percent = percent;
             this.wins = wins;
         }
-        int player_id;
-        String player_name;
-        int player_rating;
+        PlayerClass player;
         float score_total;
-        float vp_total;
-        float vp_total_total;
+        int vp_total;
+        int vp_total_total;
         float percent;
-        float wins;
+        int wins;
+        
     }
+    
+    // Sort functions
+    class byStanding implements Comparator<StandingDetail> {
+        @Override
+        public int compare(StandingDetail player1, StandingDetail player2) {
+            if (player1.score_total > player2.score_total) {
+                return -1;
+            }
+            if (player2.score_total > player1.score_total) {
+                return 1;
+            }
+            if (player1.vp_total > player2.vp_total) {
+                return -1;
+            }
+            if (player2.vp_total > player1.vp_total) {
+                return 1;
+            }
+            
+
+            return 0;
+        }
+    };
     
     
     

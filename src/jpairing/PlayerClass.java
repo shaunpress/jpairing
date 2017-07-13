@@ -128,6 +128,18 @@ public class PlayerClass {
         return wins;
     }
     
+    public String get_round_result(int round_no) {
+        String output_string = "";
+        ResultClass result = results.get(round_no);
+        
+        output_string += Integer.toString(result.tableNo)+" ";
+        output_string += Float.toString(result.score)+"-"+Float.toString(result.vpScore)+" ";
+        output_string += Float.toString(result.vpTotal)+"\t";
+        
+        
+        return output_string;
+    }
+    
     public void enterResults(int round_no, String[] score_info) {
         
         if (round_no > results.size()) {
