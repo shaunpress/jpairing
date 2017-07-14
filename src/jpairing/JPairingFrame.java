@@ -318,6 +318,11 @@ public class JPairingFrame extends javax.swing.JFrame implements TableModelListe
         jFileMenu.add(jSeparator1);
 
         jModifyTournamentMenuItem.setText("Modify Tournament");
+        jModifyTournamentMenuItem.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                jModifyTournamentMenuItemActionPerformed(evt);
+            }
+        });
         jFileMenu.add(jModifyTournamentMenuItem);
         jFileMenu.add(jSeparator2);
 
@@ -505,6 +510,26 @@ public class JPairingFrame extends javax.swing.JFrame implements TableModelListe
         pairingDataModel.update_display(value);
     }//GEN-LAST:event_roundSpinnerStateChanged
 
+    private void jModifyTournamentMenuItemActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jModifyTournamentMenuItemActionPerformed
+        // TODO add your handling code here:
+        if (tournamentDetails == null) {
+            jNewTournamentMenuItemActionPerformed(evt);
+            return;
+        }
+        TournamentDetailsDialog myDialog = new TournamentDetailsDialog(this,true);
+        myDialog.getjNameTextField().setText(tournamentDetails.getName());
+        myDialog.getjPlaceTextField().setText(tournamentDetails.getPlace());
+                
+        int dialogResult = myDialog.showDialog();
+        
+        if (dialogResult == 1 ) {
+            tournamentDetails.setName(myDialog.getjNameTextField().getText());
+            tournamentDetails.setPlace(myDialog.getjPlaceTextField().getText());
+            
+            this.setTitle(tournamentDetails.getName());
+        }
+    }//GEN-LAST:event_jModifyTournamentMenuItemActionPerformed
+
     private void readTournamentFile(Path path) {
         // Reads from a aps format file and creates objects etc
         try {
@@ -544,6 +569,9 @@ public class JPairingFrame extends javax.swing.JFrame implements TableModelListe
                 input_line = list_in.get(line_count).trim();
                 
             }
+            int max_rounds = pairingDataModel.getRounds();
+            javax.swing.SpinnerNumberModel spinModel = new javax.swing.SpinnerNumberModel(0,0,max_rounds,1);
+            roundSpinner.setModel(spinModel);
             
         }
         catch (IOException e) {

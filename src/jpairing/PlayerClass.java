@@ -62,9 +62,6 @@ public class PlayerClass {
             case 2:
                 setRating((int)value);
                 break;
-            case 3:
-                setPairingId((int)value);
-                break;
         }
     }
 

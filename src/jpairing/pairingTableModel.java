@@ -67,9 +67,17 @@ public class pairingTableModel extends AbstractTableModel {
         this.current_round = current_round;
     }
     
+    public int getRounds() {
+        return round_pairings.size();
+    }
+    
     public void update_display(int round_no) {
+        if (round_no == 0) {
+            return;
+        }
         setCurrentRound(round_no-1);
-        round_pairings.get(round_no-1).sort_pairing();
+        round_pairings.get(round_no-1).update_totals(round_no-1);
+        round_pairings.get(round_no-1).sort_pairing();        
         int no_of_pairings = round_pairings.get(round_no-1).pairings.size();
         fireTableRowsInserted(0, no_of_pairings);
     }
@@ -86,7 +94,7 @@ public class pairingTableModel extends AbstractTableModel {
         } else {
             pairing.setBoardNo(Integer.parseInt(round_data[0]));
         }
-        pairing.setPlayerName(player.getPlayerName());
+        pairing.setPlayer(player);
         pairing.setMatch_points(Float.parseFloat(round_data[1]));
         pairing.setVictory_points(Integer.parseInt(round_data[2]));
         

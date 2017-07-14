@@ -18,12 +18,16 @@ public class PairingClass {
     public void setBoardNo(int boardNo) {
         this.boardNo = boardNo;
     }
-
-    public void setPlayerName(String playerName) {
-        this.playerName = playerName;
+    
+    public void setPlayer(PlayerClass player) {
+        this.player = player;
     }
 
-    public void setCurrent_score(int current_score) {
+    public void setPlayerName(String playerName) {
+        this.player.setPlayerName(playerName); 
+    }
+
+    public void setCurrent_score(float current_score) {
         this.current_score = current_score;
     }
 
@@ -44,10 +48,10 @@ public class PairingClass {
     }
     
     public String getPlayerName() {
-        return playerName;
+        return player.getPlayerName();
     }
 
-    public int getCurrent_score() {
+    public float getCurrent_score() {
         return current_score;
     }
 
@@ -59,11 +63,16 @@ public class PairingClass {
         return victory_points;
     }
     
+    public void update_total(int round_no) {
+        float[] scores = player.get_player_score_n(round_no);
+        current_score = scores[0];
+    }
+    
     private static int noOfPairings = 0;
     
     private int boardNo;
-    private String playerName;
-    private int current_score;
+    private PlayerClass player;
+    private float current_score;
     private float match_points;
     private int victory_points;
     
@@ -94,6 +103,18 @@ public class PairingClass {
         switch (col) {
             case 0:
                 setBoardNo((int)value);
+                break;
+            case 1:
+                setPlayerName((String)value);
+                break;
+            case 2:
+                setCurrent_score((float)value);
+                break;
+            case 3:
+                setMatch_points((float)value);
+                break;
+            case 4:
+                setVictory_points((int)value);
                 break;
         }
     }

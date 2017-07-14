@@ -25,6 +25,12 @@ public class PairingListClass {
         pairings.add(pairing);
     }
     
+    void update_totals(int round_no) {
+        for (PairingClass round_pairing:pairings) {
+            round_pairing.update_total(round_no);
+        }
+    }
+    
     void sort_pairing() {
         Collections.sort(pairings,new byBoard());
     }
@@ -36,7 +42,7 @@ public class PairingListClass {
                 return 1;
             }
             if (pairing2.getBoardNo() == 0) {
-                return 1;
+                return -1;
             }
             if (pairing1.getBoardNo() > pairing2.getBoardNo()) {
                 return 1;
