@@ -63,6 +63,15 @@ public class PairingClass {
         return victory_points;
     }
     
+    public String get_string() {
+        String output_string = "";
+        
+        output_string += Integer.toString(boardNo)+"\t";
+        output_string += getPlayerName()+"\t";
+        output_string += Float.toString(current_score)+"\t";
+        return output_string;
+    }
+    
     public void update_total(int round_no) {
         float[] scores = player.get_player_score_n(round_no);
         current_score = scores[0];

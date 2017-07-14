@@ -104,6 +104,14 @@ public class pairingTableModel extends AbstractTableModel {
         fireTableRowsInserted(rowCount, rowCount);
         
     }
+    
+    public String getPairingsText(int round_no) {
+        String output_string = "";
+        PairingListClass this_round = round_pairings.get(round_no-1);
+        output_string += this_round.getPairingsText();
+        
+        return output_string;
+    }
     public void addRow() {
         
         

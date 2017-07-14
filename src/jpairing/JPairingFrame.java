@@ -25,11 +25,13 @@ public class JPairingFrame extends javax.swing.JFrame implements TableModelListe
     private playerTableModel playerDataModel;
     private pairingTableModel pairingDataModel;
     private TournamentClass tournamentDetails;
+    private int current_round;
 
     /**
      * Creates new form JPairingFrame
      */
     public JPairingFrame() {
+        current_round = 0;
         playerDataModel = new playerTableModel();
         pairingDataModel = new pairingTableModel();
         playerDataModel.addBlankRow();
@@ -194,6 +196,7 @@ public class JPairingFrame extends javax.swing.JFrame implements TableModelListe
 
         jLabel1.setText("Current Round");
 
+        roundSpinner.setModel(new javax.swing.SpinnerNumberModel(0, 0, 0, 1));
         roundSpinner.addChangeListener(new javax.swing.event.ChangeListener() {
             public void stateChanged(javax.swing.event.ChangeEvent evt) {
                 roundSpinnerStateChanged(evt);
@@ -254,6 +257,11 @@ public class JPairingFrame extends javax.swing.JFrame implements TableModelListe
         });
 
         pairingsOutputButton.setText("Pairings");
+        pairingsOutputButton.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                pairingsOutputButtonActionPerformed(evt);
+            }
+        });
 
         printOutputButton.setText("Print");
 
@@ -490,14 +498,14 @@ public class JPairingFrame extends javax.swing.JFrame implements TableModelListe
     private void crosstableOutputPrintActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_crosstableOutputPrintActionPerformed
         // Output crosstable as string
         String crosstable_text = "Place \tPlayer Name \tRating \n";
-        crosstable_text += playerDataModel.player_crosstable_list(2);
+        crosstable_text += playerDataModel.player_crosstable_list(current_round);
         jTextPane1.setText(crosstable_text);
     }//GEN-LAST:event_crosstableOutputPrintActionPerformed
 
     private void standingsOutputButtonActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_standingsOutputButtonActionPerformed
         // Output standings as string
         String standingsText = "Place \tPlayer Name \tRating \tMP \tVP \tVP% \tWins \n";
-        standingsText += playerDataModel.player_standing_list(2);
+        standingsText += playerDataModel.player_standing_list(current_round);
         jTextPane1.setText(standingsText);
     }//GEN-LAST:event_standingsOutputButtonActionPerformed
 
@@ -507,6 +515,7 @@ public class JPairingFrame extends javax.swing.JFrame implements TableModelListe
             roundSpinner.commitEdit();
         } catch ( java.text.ParseException e ) { }
         int value = (Integer) roundSpinner.getValue();
+        current_round = value;
         pairingDataModel.update_display(value);
     }//GEN-LAST:event_roundSpinnerStateChanged
 
@@ -529,6 +538,15 @@ public class JPairingFrame extends javax.swing.JFrame implements TableModelListe
             this.setTitle(tournamentDetails.getName());
         }
     }//GEN-LAST:event_jModifyTournamentMenuItemActionPerformed
+
+    private void pairingsOutputButtonActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_pairingsOutputButtonActionPerformed
+        // Show pairings on output page
+        String header_text = "Pairings for Round: "+Integer.toString(current_round)+"\n";
+        String output_text = "Board \tPlayer \tCurrent Score \tMP \tVP\n";
+        output_text += "=====================================================\n";
+        output_text += pairingDataModel.getPairingsText(current_round);
+        jTextPane1.setText(output_text);
+    }//GEN-LAST:event_pairingsOutputButtonActionPerformed
 
     private void readTournamentFile(Path path) {
         // Reads from a aps format file and creates objects etc

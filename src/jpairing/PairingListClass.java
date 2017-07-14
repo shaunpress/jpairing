@@ -35,6 +35,21 @@ public class PairingListClass {
         Collections.sort(pairings,new byBoard());
     }
     
+    public String getPairingsText() {
+        String output_string = "";
+        sort_pairing();
+        int current_board = pairings.get(0).getBoardNo();
+        for (PairingClass round_pairing:pairings) {
+            if (round_pairing.getBoardNo() != current_board) {
+                output_string += "=====================================================\n";
+                current_board = round_pairing.getBoardNo();
+            }
+            output_string += round_pairing.get_string()+"...\t...\n";
+        }
+        
+        return output_string;
+    }
+    
     class byBoard implements Comparator<PairingClass> {
         @Override
         public int compare(PairingClass pairing1, PairingClass pairing2) {
