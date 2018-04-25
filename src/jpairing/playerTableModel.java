@@ -61,12 +61,32 @@ public class playerTableModel extends AbstractTableModel {
     }
     
     public void resetPlayerList() {
-        int rowCount = getRowCount();
-        fireTableRowsDeleted(0,rowCount);
-        PlayerClass.setNoOfPlayers(0);
-        data = new ArrayList<PlayerClass>();
+        if (null != data) {
+            int rowCount = getRowCount();
+            if (rowCount > 0)
+                fireTableRowsDeleted(0,rowCount);
+            PlayerClass.setNoOfPlayers(0);
+            data = new ArrayList<PlayerClass>();
+        }
     }
     
+    public void delete_last_round() {
+        for (PlayerClass player:data) {
+            player.delete_last_result();
+        }
+    }
+    
+    public void add_blank_results(int round_no, PairingListClass pair_list) {
+        for (PairingClass pair:pair_list.pairings) {
+            PlayerClass player = pair.getPlayer();
+            player.createResultEntry(round_no,pair.getBoardNo());
+        }
+    } 
+    
+    public ArrayList<PlayerClass> getPlayers()
+    {
+        return data;
+    }
     public PlayerClass get_player(int player_id) {
         return data.get(player_id);
     }
@@ -76,6 +96,18 @@ public class playerTableModel extends AbstractTableModel {
         PlayerClass newPlayer = new PlayerClass(0);
         newPlayer.setPlayerName(fields[0]);
         newPlayer.setRating(Integer.parseInt(fields[1]));
+        if (fields.length > 2) {
+            String availability_string = fields[2];
+            int total_rounds  = availability_string.length();
+            newPlayer.init_availability(total_rounds);           
+            for (int i = 0; i < total_rounds; i++) {
+                if (availability_string.charAt(i) == '1') {
+                    newPlayer.change_availability(i, Boolean.TRUE);
+                } else {
+                    newPlayer.change_availability(i, Boolean.FALSE);
+                }
+            }
+        }
         int rowCount = getRowCount();
         data.add(newPlayer);
         fireTableRowsInserted(rowCount, rowCount);
@@ -96,11 +128,30 @@ public class playerTableModel extends AbstractTableModel {
         
     }
     
+    public void update_vp_total_total(int round, int board) {
+        // Recalculates the vivtory point totals for a board in the
+        // specified round
+        
+        int vp_total_total = 0;
+        for (PlayerClass player:data) {
+            if (player.played_on(round,board)) {
+                vp_total_total += player.get_vp(round);
+            }
+        }
+        for (PlayerClass player:data) {
+            if (player.played_on(round,board)) {
+                player.set_vp_total_total(round,vp_total_total);
+            }
+        }
+    }
+    
     public void addBlankRow() {
         
         int rowCount = getRowCount();
         if ((rowCount == 0) || (null != getValueAt(rowCount-1,1))) {
             PlayerClass newRow = new PlayerClass(0);
+            // Assume no more than 24 rounds!
+            newRow.init_availability(24);
             data.add(newRow);
             fireTableRowsInserted(rowCount, rowCount);
         }
@@ -108,8 +159,49 @@ public class playerTableModel extends AbstractTableModel {
     
     
     public void deleteRow(int rowNo) {
-        data.remove(rowNo);
-        fireTableRowsDeleted(rowNo,rowNo);
+        if (rowNo < data.size()) {
+            fireTableRowsDeleted(rowNo,rowNo);
+            data.remove(rowNo);
+            
+        }
+    }
+    
+    public String fileOutput() {
+        // Player data in string format for saving
+        String outputString = "Name;Rating\n";
+        for (PlayerClass player:data) {
+            outputString += player.getPlayerName()+";"+Integer.toString(player.getRating())+";";
+            outputString += player.get_availability_string();
+            outputString +="\n";
+            // TODO: Availability string
+        }
+        outputString += "\n";
+        
+        return outputString;
+    }
+    
+    public String filePairingOutput() {
+        String outputString = "Player_id     Rd1_board;Rd1_mp;Rd1_vp; ....\n";
+        for (PlayerClass player:data) {
+            outputString += Integer.toString(player.getPairingId())+" ";
+            outputString += player.getResultsString();
+        }
+        outputString += "\n";
+        
+        return outputString;
+    }
+    
+    public String csvOutput(int total_rounds) {
+        String outputString = "Pairing ID,Name,Rating";
+        for (int i=0; i<total_rounds; i++) {
+            outputString += ",Round "+Integer.toString(i+1)+" Table,Score,VP Score";
+        }
+        outputString += "\n";
+        for (PlayerClass player:data) {
+            outputString += player.getCSVString();
+        }
+        
+        return outputString;
     }
     
     public String player_crosstable_list(int round_no) {
@@ -120,8 +212,13 @@ public class playerTableModel extends AbstractTableModel {
         for (PlayerClass player:data ) {
             float player_score[] = player.get_player_score_n(round_no);
             int player_wins = player.get_player_wins_n(round_no);
-            
-            StandingDetail standing_data = new StandingDetail(player, player_score[0], (int)player_score[1], (int)player_score[2], 0.0f, player_wins );
+            float vp_percent;
+            if (player_score[2] == 0) {
+                vp_percent = 0.0f;
+            } else {
+                vp_percent = 100 * player_score[1] / player_score[2];
+            }
+            StandingDetail standing_data = new StandingDetail(player, player_score[0], (int)player_score[1], (int)player_score[2], vp_percent, player_wins );
             
             
             standing_list.add(standing_data);
@@ -138,7 +235,7 @@ public class playerTableModel extends AbstractTableModel {
                 output_string += standing_info.player.get_round_result(i);
             }
             output_string += Float.toString(standing_info.score_total)+"\t"+Float.toString(standing_info.vp_total)+"\t";
-            output_string += Float.toString(standing_info.percent)+"\t";
+            output_string += String.format("%.2f",standing_info.percent)+"\t";
             output_string += Integer.toString(standing_info.wins)+"\n";
             rank++;
             
@@ -157,7 +254,7 @@ public class playerTableModel extends AbstractTableModel {
             int player_wins = player.get_player_wins_n(round_no);
             
             if (player_score[2] != 0.0f) {
-                player_percent = player_score[1]/player_score[2];               
+                player_percent = 100*player_score[1]/player_score[2];               
             }
             
             StandingDetail standing_data = new StandingDetail(player, player_score[0], (int)player_score[1], (int)player_score[2], player_percent, player_wins );
@@ -170,7 +267,7 @@ public class playerTableModel extends AbstractTableModel {
             rank++;
             output_string += Integer.toString(rank)+"\t"+standing_info.player.getPlayerName()+"\t"+standing_info.player.getRating()+"\t";
             output_string += Float.toString(standing_info.score_total)+"\t"+Float.toString(standing_info.vp_total)+"\t";
-            output_string += Float.toString(standing_info.percent)+"\t";
+            output_string += String.format("%.2f",standing_info.percent)+"\t";
             output_string += Integer.toString(standing_info.wins)+"\n";
         }
         
@@ -210,6 +307,13 @@ public class playerTableModel extends AbstractTableModel {
                 return -1;
             }
             if (player2.vp_total > player1.vp_total) {
+                return 1;
+            }
+            
+            if (player1.percent > player2.percent) {
+                return -1;
+            }
+            if (player2.percent > player1.percent) {
                 return 1;
             }
             

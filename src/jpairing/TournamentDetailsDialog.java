@@ -21,6 +21,8 @@ public class TournamentDetailsDialog extends javax.swing.JDialog {
     public TournamentDetailsDialog(java.awt.Frame parent, boolean modal) {
         super(parent, modal);
         initComponents();
+        jStartDateSpinner.setEditor(new JSpinner.DateEditor(jStartDateSpinner, "dd/MM/yyyy"));
+        jEndDateSpinner.setEditor(new JSpinner.DateEditor(jEndDateSpinner, "dd/MM/yyyy"));
     }
 
     /**

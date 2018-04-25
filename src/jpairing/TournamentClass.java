@@ -6,6 +6,7 @@
 package jpairing;
 
 import java.util.Date;
+import java.text.SimpleDateFormat;
 
 /**
  *
@@ -32,6 +33,11 @@ public class TournamentClass {
         String outputText;
         
         outputText = name+'\n'+place+'\n';
+        SimpleDateFormat dateFormat = new SimpleDateFormat("yyyy-MM-dd");
+        outputText += dateFormat.format(begin_date)+","+dateFormat.format(end_date)+"\n";
+        outputText += director+"\n";
+        outputText += total_rounds+"\n";
+        
         
         return outputText;
     }

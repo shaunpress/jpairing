@@ -6,15 +6,25 @@
 package jpairing;
 
 import java.io.File;
+import java.io.BufferedWriter;
 import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Path;
+import java.nio.file.Paths;
+import java.nio.file.StandardOpenOption;
 import java.util.List;
 import javax.swing.JFileChooser;
+import javax.swing.filechooser.FileNameExtensionFilter;
 import javax.swing.JOptionPane;
 import javax.swing.event.TableModelEvent;
 import javax.swing.event.TableModelListener;
 import javax.swing.table.TableModel;
+import java.util.Date;
+import java.text.SimpleDateFormat;
+import java.text.ParseException;
+import java.awt.print.*;
+import javax.swing.DefaultCellEditor;
+import javax.swing.JTextField;
 
 /**
  *
@@ -37,6 +47,9 @@ public class JPairingFrame extends javax.swing.JFrame implements TableModelListe
         playerDataModel.addBlankRow();
         initComponents();
         playerDataTable.getModel().addTableModelListener(this);
+        // playerDataTable.getColumnModel().getColumn(1).setCellEditor(new SelectAllCellEditor(new JTextField()));
+        // playerDataTable.setDefaultEditor(playerDataModel.getClass(), new SelectAllCellEditor(new JTextField()));
+        // jTable2.setDefaultEditor(pairingDataModel.getClass(), new SelectAllCellEditor(new JTextField()));
         
         
     }
@@ -101,13 +114,13 @@ public class JPairingFrame extends javax.swing.JFrame implements TableModelListe
         jSeparator2 = new javax.swing.JPopupMenu.Separator();
         jExitMenuItem = new javax.swing.JMenuItem();
         jStandingsMenu = new javax.swing.JMenu();
-        jMenuItem6 = new javax.swing.JMenuItem();
-        jMenuItem7 = new javax.swing.JMenuItem();
-        jMenuItem8 = new javax.swing.JMenuItem();
+        jStandingsMenuItem = new javax.swing.JMenuItem();
+        jCrosstableMenuItem = new javax.swing.JMenuItem();
+        jPairingsMenuItem = new javax.swing.JMenuItem();
         jExtrasMenu = new javax.swing.JMenu();
-        jMenuItem9 = new javax.swing.JMenuItem();
+        jDeleteRoundMenuItem = new javax.swing.JMenuItem();
         jSeparator3 = new javax.swing.JPopupMenu.Separator();
-        jMenuItem10 = new javax.swing.JMenuItem();
+        jCSVExportMenuItem = new javax.swing.JMenuItem();
         jHelpMenu = new javax.swing.JMenu();
         helpMenuItem = new javax.swing.JMenuItem();
         aboutMenuItem = new javax.swing.JMenuItem();
@@ -123,8 +136,19 @@ public class JPairingFrame extends javax.swing.JFrame implements TableModelListe
             }
         });
 
+        jTabbedPane1.setPreferredSize(getSize());
+
+        jPanel1.setLayout(new java.awt.BorderLayout());
+
         playerDataTable.setModel(playerDataModel);
+        playerDataTable.addMouseListener(new java.awt.event.MouseAdapter() {
+            public void mouseClicked(java.awt.event.MouseEvent evt) {
+                playerDataTableMouseClicked(evt);
+            }
+        });
         jScrollPane1.setViewportView(playerDataTable);
+
+        jPanel1.add(jScrollPane1, java.awt.BorderLayout.CENTER);
 
         addPlayerButton.setText("Add Player");
         addPlayerButton.addActionListener(new java.awt.event.ActionListener() {
@@ -160,21 +184,7 @@ public class JPairingFrame extends javax.swing.JFrame implements TableModelListe
                 .addContainerGap(17, Short.MAX_VALUE))
         );
 
-        javax.swing.GroupLayout jPanel1Layout = new javax.swing.GroupLayout(jPanel1);
-        jPanel1.setLayout(jPanel1Layout);
-        jPanel1Layout.setHorizontalGroup(
-            jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-            .addComponent(jScrollPane1, javax.swing.GroupLayout.DEFAULT_SIZE, 895, Short.MAX_VALUE)
-            .addComponent(jPanel4, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
-        );
-        jPanel1Layout.setVerticalGroup(
-            jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-            .addGroup(jPanel1Layout.createSequentialGroup()
-                .addComponent(jScrollPane1, javax.swing.GroupLayout.PREFERRED_SIZE, 637, javax.swing.GroupLayout.PREFERRED_SIZE)
-                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                .addComponent(jPanel4, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
-                .addGap(0, 32, Short.MAX_VALUE))
-        );
+        jPanel1.add(jPanel4, java.awt.BorderLayout.PAGE_END);
 
         jTabbedPane1.addTab("Player List", jPanel1);
 
@@ -189,8 +199,18 @@ public class JPairingFrame extends javax.swing.JFrame implements TableModelListe
         });
 
         updatePairButton.setText("Update");
+        updatePairButton.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                updatePairButtonActionPerformed(evt);
+            }
+        });
 
         modifyPairButton.setText("Modify");
+        modifyPairButton.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                modifyPairButtonActionPerformed(evt);
+            }
+        });
 
         printPairButton.setText("Print");
 
@@ -225,7 +245,7 @@ public class JPairingFrame extends javax.swing.JFrame implements TableModelListe
         );
         jPanel2Layout.setVerticalGroup(
             jPanel2Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-            .addGroup(jPanel2Layout.createSequentialGroup()
+            .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, jPanel2Layout.createSequentialGroup()
                 .addComponent(jScrollPane3, javax.swing.GroupLayout.PREFERRED_SIZE, 601, javax.swing.GroupLayout.PREFERRED_SIZE)
                 .addGap(18, 18, 18)
                 .addGroup(jPanel2Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
@@ -237,7 +257,7 @@ public class JPairingFrame extends javax.swing.JFrame implements TableModelListe
                 .addGroup(jPanel2Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
                     .addComponent(updatePairButton)
                     .addComponent(printPairButton))
-                .addGap(0, 43, Short.MAX_VALUE))
+                .addGap(43, 43, 43))
         );
 
         jTabbedPane1.addTab("Pairing Page", jPanel2);
@@ -264,6 +284,11 @@ public class JPairingFrame extends javax.swing.JFrame implements TableModelListe
         });
 
         printOutputButton.setText("Print");
+        printOutputButton.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                printOutputButtonActionPerformed(evt);
+            }
+        });
 
         jTextPane1.setFont(new java.awt.Font("Courier New", 0, 10)); // NOI18N
         jScrollPane2.setViewportView(jTextPane1);
@@ -346,25 +371,50 @@ public class JPairingFrame extends javax.swing.JFrame implements TableModelListe
 
         jStandingsMenu.setText("Standings");
 
-        jMenuItem6.setText("Standings");
-        jStandingsMenu.add(jMenuItem6);
+        jStandingsMenuItem.setText("Standings");
+        jStandingsMenuItem.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                jStandingsMenuItemActionPerformed(evt);
+            }
+        });
+        jStandingsMenu.add(jStandingsMenuItem);
 
-        jMenuItem7.setText("Crosstable");
-        jStandingsMenu.add(jMenuItem7);
+        jCrosstableMenuItem.setText("Crosstable");
+        jCrosstableMenuItem.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                jCrosstableMenuItemActionPerformed(evt);
+            }
+        });
+        jStandingsMenu.add(jCrosstableMenuItem);
 
-        jMenuItem8.setText("Pairings");
-        jStandingsMenu.add(jMenuItem8);
+        jPairingsMenuItem.setText("Pairings");
+        jPairingsMenuItem.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                jPairingsMenuItemActionPerformed(evt);
+            }
+        });
+        jStandingsMenu.add(jPairingsMenuItem);
 
         jMenuBar1.add(jStandingsMenu);
 
         jExtrasMenu.setText("Extras");
 
-        jMenuItem9.setText("Delete Current Round");
-        jExtrasMenu.add(jMenuItem9);
+        jDeleteRoundMenuItem.setText("Delete Current Round");
+        jDeleteRoundMenuItem.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                jDeleteRoundMenuItemActionPerformed(evt);
+            }
+        });
+        jExtrasMenu.add(jDeleteRoundMenuItem);
         jExtrasMenu.add(jSeparator3);
 
-        jMenuItem10.setText("Export Tournament in CSV Format");
-        jExtrasMenu.add(jMenuItem10);
+        jCSVExportMenuItem.setText("Export Tournament in CSV Format");
+        jCSVExportMenuItem.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                jCSVExportMenuItemActionPerformed(evt);
+            }
+        });
+        jExtrasMenu.add(jCSVExportMenuItem);
 
         jMenuBar1.add(jExtrasMenu);
 
@@ -394,11 +444,11 @@ public class JPairingFrame extends javax.swing.JFrame implements TableModelListe
         getContentPane().setLayout(layout);
         layout.setHorizontalGroup(
             layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-            .addComponent(jTabbedPane1)
+            .addComponent(jTabbedPane1, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
         );
         layout.setVerticalGroup(
             layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-            .addComponent(jTabbedPane1)
+            .addComponent(jTabbedPane1, javax.swing.GroupLayout.DEFAULT_SIZE, 754, Short.MAX_VALUE)
         );
 
         pack();
@@ -411,22 +461,59 @@ public class JPairingFrame extends javax.swing.JFrame implements TableModelListe
 
     private void helpMenuItemActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_helpMenuItemActionPerformed
         // TODO add your handling code here:
+        String helpText = new String("Help for jPairing 1.0");
+        try {
+            helpText = new String(Files.readAllBytes(Paths.get("./pypairinghelp.html")));
+        } 
+        catch (IOException e) {
+            System.out.println(e);
+        }
+        javax.swing.JFrame helpFrame = new javax.swing.JFrame("JPairing Help");
+        javax.swing.JEditorPane helpPane = new javax.swing.JEditorPane();
+        helpPane.setEditable(false);
+        helpPane.setContentType("text/html");
+        helpPane.setText(helpText);
+        
+        javax.swing.JScrollPane editorScrollPane = new javax.swing.JScrollPane(helpPane);
+        editorScrollPane.setVerticalScrollBarPolicy(
+                javax.swing.JScrollPane.VERTICAL_SCROLLBAR_ALWAYS);
+        editorScrollPane.setPreferredSize(new java.awt.Dimension(250, 145));
+        editorScrollPane.setMinimumSize(new java.awt.Dimension(100, 100));
+        
+        helpFrame.add(editorScrollPane);
+        helpFrame.setSize(500, 500);
+        helpFrame.setVisible(true);
+
+        // JOptionPane.showMessageDialog(this, helpText);
     }//GEN-LAST:event_helpMenuItemActionPerformed
 
     private void addPlayerButtonActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_addPlayerButtonActionPerformed
         // TODO add your handling code here:
+        int rounds = 0;
+        if (null != tournamentDetails) {
+            rounds = tournamentDetails.getTotal_rounds();
+        }
         playerDataModel.addBlankRow();
     }//GEN-LAST:event_addPlayerButtonActionPerformed
 
     private void deletePlayerButtonActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_deletePlayerButtonActionPerformed
         // TODO add your handling code here:
+        if (pairingDataModel.getRounds() > 0) {
+            JOptionPane.showMessageDialog(null, "Warning: Unable to delete player. Event has begun");
+            return;
+        }
         int rowNo = playerDataTable.getSelectedRow();
-        playerDataModel.deleteRow(rowNo);
+        if (rowNo > -1) {
+            playerDataModel.deleteRow(rowNo);
+        }
     }//GEN-LAST:event_deletePlayerButtonActionPerformed
 
     private void jSaveTournamentMenuItemActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jSaveTournamentMenuItemActionPerformed
         // TODO add your handling code here:
         final JFileChooser fc = new JFileChooser();
+        FileNameExtensionFilter filter = new FileNameExtensionFilter(
+        "Abstract Pairing System", "aps");
+        fc.setFileFilter(filter);
         
         int returnVal = fc.showSaveDialog(this);
         
@@ -434,6 +521,8 @@ public class JPairingFrame extends javax.swing.JFrame implements TableModelListe
             File file = fc.getSelectedFile();
             
             // Handle file save here
+            Path path = file.toPath();
+            writeTournamentFile(path);
         }                                         
         
     }//GEN-LAST:event_jSaveTournamentMenuItemActionPerformed
@@ -455,10 +544,19 @@ public class JPairingFrame extends javax.swing.JFrame implements TableModelListe
         if (exit_code == JOptionPane.YES_OPTION) {
             System.exit(0);
         }
+        setDefaultCloseOperation(DO_NOTHING_ON_CLOSE);
     }//GEN-LAST:event_formWindowClosing
 
     private void jNewTournamentMenuItemActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jNewTournamentMenuItemActionPerformed
         // TODO add your handling code here:
+        if (tournamentDetails != null) {
+            int exit_code = JOptionPane.showConfirmDialog(this, "There is currently an active event. Do you wish to create a new event","New Tournament",
+                JOptionPane.YES_NO_OPTION);
+            if (exit_code == JOptionPane.NO_OPTION) {
+                return;
+            }
+        }
+        resetTournament();
         TournamentDetailsDialog myDialog = new TournamentDetailsDialog(this,true);
         int dialogResult = myDialog.showDialog();
         
@@ -466,6 +564,10 @@ public class JPairingFrame extends javax.swing.JFrame implements TableModelListe
             tournamentDetails = new TournamentClass();
             tournamentDetails.setName(myDialog.getjNameTextField().getText());
             tournamentDetails.setPlace(myDialog.getjPlaceTextField().getText());
+            tournamentDetails.setBegin_date((Date)myDialog.getjStartDateSpinner().getValue());
+            tournamentDetails.setEnd_date((Date)myDialog.getjEndDateSpinner().getValue());
+            tournamentDetails.setTotal_rounds((int)myDialog.getjRoundsSpinner().getValue());
+            
             
             this.setTitle(tournamentDetails.getName());
         }
@@ -474,9 +576,31 @@ public class JPairingFrame extends javax.swing.JFrame implements TableModelListe
         
     }//GEN-LAST:event_jNewTournamentMenuItemActionPerformed
 
+    private void resetTournament() {
+        if (null != playerDataModel) {
+            playerDataModel.resetPlayerList();
+        }
+        
+        if (null != pairingDataModel) {
+            pairingDataModel.resetPairingList();
+            javax.swing.SpinnerNumberModel spinModel = new javax.swing.SpinnerNumberModel(0,0,0,1);
+            roundSpinner.setModel(spinModel);
+            
+        }
+        
+        if (null != tournamentDetails) {
+            tournamentDetails = new TournamentClass();
+        }
+        
+        current_round = 0;
+    }
+    
     private void jOpenTournamentMenuItemActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jOpenTournamentMenuItemActionPerformed
         // TODO add your handling code here:
         final JFileChooser fc = new JFileChooser();
+        FileNameExtensionFilter filter = new FileNameExtensionFilter(
+        "Abstract Pairing System", "aps");
+        fc.setFileFilter(filter);
         
         int returnVal = fc.showOpenDialog(this);
         
@@ -484,29 +608,55 @@ public class JPairingFrame extends javax.swing.JFrame implements TableModelListe
             File file = fc.getSelectedFile();
             Path path = file.toPath();
             // Handle file read here
+            resetTournament();
             readTournamentFile(path);
         }
     }//GEN-LAST:event_jOpenTournamentMenuItemActionPerformed
 
     private void automaticPairButtonActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_automaticPairButtonActionPerformed
         // TODO add your handling code here:
-        
-        pairingDataModel.addRow();
-        
+        if (current_round < pairingDataModel.getRounds()) {
+            JOptionPane.showMessageDialog(null, "Warning Round "+(current_round+1)+" already paired");
+            return;
+        }
+        if (playerDataModel.getRowCount() < 3) {
+            JOptionPane.showMessageDialog(null, "Warning: Insufficient players to pair");
+            return;
+        }
+        current_round += 1;
+        SimplePairingClass new_pairings = new SimplePairingClass(playerDataModel.getPlayers(),current_round);
+        PairingListClass pair_list = new_pairings.make_pairings();
+        pairingDataModel.addPairings(pair_list);
+        playerDataModel.add_blank_results(current_round, pair_list);
+        roundSpinner.setValue(new Integer(current_round));
+        javax.swing.SpinnerNumberModel spinModel = new javax.swing.SpinnerNumberModel(current_round,0,current_round,1);
+        roundSpinner.setModel(spinModel);
     }//GEN-LAST:event_automaticPairButtonActionPerformed
 
     private void crosstableOutputPrintActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_crosstableOutputPrintActionPerformed
         // Output crosstable as string
-        String crosstable_text = "Place \tPlayer Name \tRating \n";
+        if (current_round < 1) {
+            jTextPane1.setText("");
+            return;
+        }
+        String crosstable_text = "Place \tPlayer Name \tRating \t";
+        for (int i=0;i<current_round;i++) {
+            crosstable_text += Integer.toString(i+1)+"\t";
+        }
+        crosstable_text += "MP \tVP \tVP% \tWins \n";
         crosstable_text += playerDataModel.player_crosstable_list(current_round);
-        jTextPane1.setText(crosstable_text);
+        jTextPane1.setText(makePrinterText(crosstable_text));
     }//GEN-LAST:event_crosstableOutputPrintActionPerformed
 
     private void standingsOutputButtonActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_standingsOutputButtonActionPerformed
         // Output standings as string
+        if (current_round < 1) {
+            jTextPane1.setText("");
+            return;
+        }
         String standingsText = "Place \tPlayer Name \tRating \tMP \tVP \tVP% \tWins \n";
         standingsText += playerDataModel.player_standing_list(current_round);
-        jTextPane1.setText(standingsText);
+        jTextPane1.setText(makePrinterText(standingsText));
     }//GEN-LAST:event_standingsOutputButtonActionPerformed
 
     private void roundSpinnerStateChanged(javax.swing.event.ChangeEvent evt) {//GEN-FIRST:event_roundSpinnerStateChanged
@@ -528,12 +678,19 @@ public class JPairingFrame extends javax.swing.JFrame implements TableModelListe
         TournamentDetailsDialog myDialog = new TournamentDetailsDialog(this,true);
         myDialog.getjNameTextField().setText(tournamentDetails.getName());
         myDialog.getjPlaceTextField().setText(tournamentDetails.getPlace());
+        myDialog.getjStartDateSpinner().setValue(tournamentDetails.getBegin_date());
+        myDialog.getjEndDateSpinner().setValue(tournamentDetails.getEnd_date());
+        myDialog.getjRoundsSpinner().setValue(tournamentDetails.getTotal_rounds());
                 
         int dialogResult = myDialog.showDialog();
         
         if (dialogResult == 1 ) {
             tournamentDetails.setName(myDialog.getjNameTextField().getText());
             tournamentDetails.setPlace(myDialog.getjPlaceTextField().getText());
+            tournamentDetails.setBegin_date((Date)myDialog.getjStartDateSpinner().getValue());
+            tournamentDetails.setEnd_date((Date)myDialog.getjEndDateSpinner().getValue());
+            tournamentDetails.setTotal_rounds((int)myDialog.getjRoundsSpinner().getValue());
+            
             
             this.setTitle(tournamentDetails.getName());
         }
@@ -541,13 +698,146 @@ public class JPairingFrame extends javax.swing.JFrame implements TableModelListe
 
     private void pairingsOutputButtonActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_pairingsOutputButtonActionPerformed
         // Show pairings on output page
+        if (current_round < 1) {
+            jTextPane1.setText("");
+            return;
+        }
         String header_text = "Pairings for Round: "+Integer.toString(current_round)+"\n";
         String output_text = "Board \tPlayer \tCurrent Score \tMP \tVP\n";
         output_text += "=====================================================\n";
         output_text += pairingDataModel.getPairingsText(current_round);
-        jTextPane1.setText(output_text);
+        jTextPane1.setText(makePrinterText(output_text));
     }//GEN-LAST:event_pairingsOutputButtonActionPerformed
 
+    private void playerDataTableMouseClicked(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_playerDataTableMouseClicked
+        // TODO add your handling code here:
+        if (evt.getButton() == 3) {
+            int row = playerDataTable.getSelectedRow();
+            if (row > -1) {
+                PlayerClass player = playerDataModel.get_player(row);
+                AvailabilityDialog playerAvailible = new AvailabilityDialog(this,true);
+                int total_rounds = 0;
+                if (null != tournamentDetails) {
+                    total_rounds  = tournamentDetails.getTotal_rounds();
+                }
+                playerAvailible.addData(player,total_rounds);
+                int result = playerAvailible.showDialog();
+                if (result == 1) {
+                    for (int i = 0; i<total_rounds; i++) {
+                        player.change_availability(i, playerAvailible.get_check_value(i));
+                    }
+                }
+            }
+        }
+    }//GEN-LAST:event_playerDataTableMouseClicked
+
+    private void jDeleteRoundMenuItemActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jDeleteRoundMenuItemActionPerformed
+        // Deletes the most recent round
+        if (pairingDataModel.getRounds() == current_round) {
+            pairingDataModel.delete_last_round();
+            playerDataModel.delete_last_round();
+            current_round -= 1;
+            javax.swing.SpinnerNumberModel spinModel = new javax.swing.SpinnerNumberModel(0,0,current_round,1);
+            roundSpinner.setModel(spinModel);
+            roundSpinner.setValue(current_round);
+        } else {
+            JOptionPane.showMessageDialog(null, "You can only delete the last paired round");
+        }
+        
+    }//GEN-LAST:event_jDeleteRoundMenuItemActionPerformed
+
+    private void printOutputButtonActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_printOutputButtonActionPerformed
+        // TODO add your handling code here:
+        PrinterJob job = PrinterJob.getPrinterJob();
+        String[] text_lines = jTextPane1.getText().split("\n");
+        job.setPrintable(new OutputPrinter(text_lines));
+        boolean doPrint = job.printDialog();
+        if (doPrint) {
+            try {
+                job.print();
+            } catch (PrinterException e) {
+        // The job did not successfully
+        // complete
+        }
+    }
+        
+    }//GEN-LAST:event_printOutputButtonActionPerformed
+
+    private void jStandingsMenuItemActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jStandingsMenuItemActionPerformed
+        // TODO add your handling code here:
+        jTabbedPane1.setSelectedIndex(2);
+        standingsOutputButtonActionPerformed(evt);
+    }//GEN-LAST:event_jStandingsMenuItemActionPerformed
+
+    private void jCrosstableMenuItemActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jCrosstableMenuItemActionPerformed
+        // TODO add your handling code here:
+        jTabbedPane1.setSelectedIndex(2);
+        crosstableOutputPrintActionPerformed(evt);
+    }//GEN-LAST:event_jCrosstableMenuItemActionPerformed
+
+    private void jPairingsMenuItemActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jPairingsMenuItemActionPerformed
+        // TODO add your handling code here:
+        jTabbedPane1.setSelectedIndex(2);
+        pairingsOutputButtonActionPerformed(evt);
+    }//GEN-LAST:event_jPairingsMenuItemActionPerformed
+
+    private void jCSVExportMenuItemActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jCSVExportMenuItemActionPerformed
+        // TODO add your handling code here:
+        final JFileChooser fc = new JFileChooser();
+        FileNameExtensionFilter filter = new FileNameExtensionFilter(
+        "Comma Separated Values", "csv");
+        fc.setFileFilter(filter);
+        
+        int returnVal = fc.showSaveDialog(this);
+        
+        if (returnVal == JFileChooser.APPROVE_OPTION) {
+            File file = fc.getSelectedFile();
+            
+            // Handle file save here
+            Path path = file.toPath();
+            writeCSVFile(path);
+            
+        }
+        
+    }//GEN-LAST:event_jCSVExportMenuItemActionPerformed
+
+    private void updatePairButtonActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_updatePairButtonActionPerformed
+        // TODO add your handling code here:
+        
+        pairingDataModel.update_display(current_round);
+    }//GEN-LAST:event_updatePairButtonActionPerformed
+
+    private void modifyPairButtonActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_modifyPairButtonActionPerformed
+        // TODO add your handling code here:
+        JOptionPane.showMessageDialog(null, "To modify pairing, simply change the Board No of selected player(s), then press Update button");
+    }//GEN-LAST:event_modifyPairButtonActionPerformed
+
+    private void writeCSVFile(Path path) {
+        try {
+            BufferedWriter out_file = Files.newBufferedWriter(path, StandardOpenOption.CREATE);
+            
+            out_file.write(playerDataModel.csvOutput(pairingDataModel.getRounds()));
+            out_file.close();
+        }
+        catch (IOException e) {
+            System.out.println(e);
+        }
+    }
+    private void writeTournamentFile(Path path) {
+        try {
+            BufferedWriter out_file = Files.newBufferedWriter(path, StandardOpenOption.CREATE);
+            
+            out_file.write(tournamentDetails.fileOutput());
+            out_file.write(playerDataModel.fileOutput());
+            out_file.write(playerDataModel.filePairingOutput());
+            
+            out_file.close();
+        }
+        catch (IOException e) {
+            System.out.println(e);
+        }
+    }
+    
     private void readTournamentFile(Path path) {
         // Reads from a aps format file and creates objects etc
         try {
@@ -556,6 +846,15 @@ public class JPairingFrame extends javax.swing.JFrame implements TableModelListe
             tournamentDetails.setName(list_in.get(0));
             tournamentDetails.setPlace(list_in.get(1));
             tournamentDetails.setTotal_rounds(Integer.parseInt(list_in.get(4)));
+            
+            String[] date_string = list_in.get(2).split(",");
+            SimpleDateFormat dateFormat = new SimpleDateFormat("yyyy-MM-dd"); 
+            try {
+                tournamentDetails.setBegin_date(dateFormat.parse(date_string[0]));
+                tournamentDetails.setEnd_date(dateFormat.parse(date_string[1]));
+            } catch (ParseException e) {
+                
+            }
             
             setTitle(tournamentDetails.getName());
             
@@ -567,6 +866,8 @@ public class JPairingFrame extends javax.swing.JFrame implements TableModelListe
                 line_count++;
                 input_line = list_in.get(line_count);
             }
+            
+            pairingDataModel.resetPairingList();
             
             // Load result details for each player
             line_count += 2;
@@ -588,8 +889,10 @@ public class JPairingFrame extends javax.swing.JFrame implements TableModelListe
                 
             }
             int max_rounds = pairingDataModel.getRounds();
+            pairingDataModel.make_vp_totals();
             javax.swing.SpinnerNumberModel spinModel = new javax.swing.SpinnerNumberModel(0,0,max_rounds,1);
             roundSpinner.setModel(spinModel);
+            current_round = 0; 
             
         }
         catch (IOException e) {
@@ -597,6 +900,60 @@ public class JPairingFrame extends javax.swing.JFrame implements TableModelListe
         }
         
     }
+    
+    private String makePrinterText(String input_string) {
+        // Takes a string a tidies up the output
+        int FIELD_SIZE = 8;
+        String line_list[] = input_string.split("\\r?\\n");
+        // First line is assumed to be headings
+        String field_list[] = line_list[0].split("\\t");
+        int[] field_width = new int[field_list.length];
+        int count = 0;
+        for (String field:field_list) {
+            int tab_num = (field.length()+FIELD_SIZE-1)/FIELD_SIZE;
+            field_width[count++] = tab_num;
+        }
+        
+        for (int i=1; i<line_list.length;i++) {
+            if (line_list[i].startsWith("===")) {
+                // Ignore === separators
+                continue;
+            }
+            String data_list[] = line_list[i].split("\\t");
+            for (int j=0; j<data_list.length;j++) {
+                int tabs = (data_list[j].length()+FIELD_SIZE-1)/FIELD_SIZE;
+                if (tabs > field_width[j]) {
+                    field_width[j] = tabs;
+                }
+            }
+            
+        }
+        
+        int total_width = 0;
+        
+        for (int i=0; i<field_width.length; i++) {
+            field_width[i] = field_width[i]*FIELD_SIZE;
+            total_width += field_width[i];
+        }
+        
+        String output_string = "";
+        
+        for (String line:line_list) {
+            if (line.startsWith("===")) {
+                output_string += new String(new char[total_width]).replace("\0", "=");
+            } else {
+                String fields[] = line.split("\\t");
+                for (int i=0;i<fields.length;i++) {
+                    int extra_spaces = field_width[i] - fields[i].length();
+                    output_string += fields[i]+ new String(new char[extra_spaces]).replace("\0", " ");
+                }
+            }
+            output_string += "\n";
+        }
+        
+        return output_string;
+        
+    } 
     /**
      * @param args the command line arguments
      */
@@ -639,6 +996,9 @@ public class JPairingFrame extends javax.swing.JFrame implements TableModelListe
     private javax.swing.JButton crosstableOutputPrint;
     private javax.swing.JButton deletePlayerButton;
     private javax.swing.JMenuItem helpMenuItem;
+    private javax.swing.JMenuItem jCSVExportMenuItem;
+    private javax.swing.JMenuItem jCrosstableMenuItem;
+    private javax.swing.JMenuItem jDeleteRoundMenuItem;
     private javax.swing.JMenuItem jExitMenuItem;
     private javax.swing.JMenu jExtrasMenu;
     private javax.swing.JMenu jFileMenu;
@@ -647,14 +1007,10 @@ public class JPairingFrame extends javax.swing.JFrame implements TableModelListe
     private javax.swing.JMenu jMenu3;
     private javax.swing.JMenu jMenu6;
     private javax.swing.JMenuBar jMenuBar1;
-    private javax.swing.JMenuItem jMenuItem10;
-    private javax.swing.JMenuItem jMenuItem6;
-    private javax.swing.JMenuItem jMenuItem7;
-    private javax.swing.JMenuItem jMenuItem8;
-    private javax.swing.JMenuItem jMenuItem9;
     private javax.swing.JMenuItem jModifyTournamentMenuItem;
     private javax.swing.JMenuItem jNewTournamentMenuItem;
     private javax.swing.JMenuItem jOpenTournamentMenuItem;
+    private javax.swing.JMenuItem jPairingsMenuItem;
     private javax.swing.JPanel jPanel1;
     private javax.swing.JPanel jPanel2;
     private javax.swing.JPanel jPanel3;
@@ -667,6 +1023,7 @@ public class JPairingFrame extends javax.swing.JFrame implements TableModelListe
     private javax.swing.JPopupMenu.Separator jSeparator2;
     private javax.swing.JPopupMenu.Separator jSeparator3;
     private javax.swing.JMenu jStandingsMenu;
+    private javax.swing.JMenuItem jStandingsMenuItem;
     private javax.swing.JTabbedPane jTabbedPane1;
     private javax.swing.JTable jTable2;
     private javax.swing.JTextPane jTextPane1;
@@ -680,3 +1037,5 @@ public class JPairingFrame extends javax.swing.JFrame implements TableModelListe
     private javax.swing.JButton updatePairButton;
     // End of variables declaration//GEN-END:variables
 }
+
+

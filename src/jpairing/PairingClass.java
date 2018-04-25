@@ -11,6 +11,18 @@ package jpairing;
  */
 public class PairingClass {
 
+    public PairingClass() {
+    }
+
+    public PairingClass(int boardNo, PlayerClass player, float current_score, float match_points, int victory_points) {
+        this.boardNo = boardNo;
+        this.player = player;
+        this.current_score = current_score;
+        this.match_points = match_points;
+        this.victory_points = victory_points;
+    }
+    
+
     public static void setNoOfPairings(int noOfPairings) {
         PairingClass.noOfPairings = noOfPairings;
     }
@@ -47,6 +59,10 @@ public class PairingClass {
         return boardNo;
     }
     
+    public PlayerClass getPlayer() {
+        return player;
+    }
+    
     public String getPlayerName() {
         return player.getPlayerName();
     }
@@ -75,6 +91,10 @@ public class PairingClass {
     public void update_total(int round_no) {
         float[] scores = player.get_player_score_n(round_no);
         current_score = scores[0];
+    }
+    
+    public void updatePlayerScore(int round_no) {
+        player.updateResults(round_no, boardNo, match_points, (float)victory_points);
     }
     
     private static int noOfPairings = 0;

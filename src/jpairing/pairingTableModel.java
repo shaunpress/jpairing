@@ -17,7 +17,7 @@ public class pairingTableModel extends AbstractTableModel {
     private ArrayList<PairingListClass> round_pairings = new ArrayList<PairingListClass>();
     int current_round = 0;
     boolean[] canEdit = new boolean [] {
-        false, false, false, true, true
+        true, false, false, true, true
     };
     
     Class[] types = new Class [] {
@@ -60,7 +60,35 @@ public class pairingTableModel extends AbstractTableModel {
     @Override
     public void setValueAt(Object value, int row, int col) {
         round_pairings.get(current_round).pairings.get(row).set_item(col,value);
+        round_pairings.get(current_round).pairings.get(row).updatePlayerScore(current_round);
+        int tableNo = round_pairings.get(current_round).pairings.get(row).getBoardNo();
+        updateVPTotals(current_round,tableNo);
         fireTableCellUpdated(row,col);
+    }
+    
+    public void resetPairingList() {
+        int rowCount = getRowCount();
+        fireTableRowsDeleted(0,rowCount);
+        round_pairings = new ArrayList<PairingListClass>();
+    }
+    
+    public boolean delete_last_round() {
+        int list_length = round_pairings.size();
+        if (list_length > 0) {
+            round_pairings.remove(list_length-1);
+            return true;
+        }
+        return false;
+    }
+    
+    public void updateVPTotals(int round, int tableNo) {
+        // Recalc vp totals for all players on this table
+        round_pairings.get(round).update_vp_total(round,tableNo);
+        
+    }
+    
+    public void addPairings(PairingListClass pairingList) {
+        round_pairings.add(pairingList);
     }
     
     public void setCurrentRound(int current_round) {
@@ -87,7 +115,6 @@ public class pairingTableModel extends AbstractTableModel {
         
         if (round_no > round_pairings.size()) {
             round_pairings.add(new PairingListClass(round_no));
-            System.out.println("New round created:"+round_no);
         }
         if ("X".equals(round_data[0])) {
             pairing.setBoardNo(0); 
@@ -103,6 +130,13 @@ public class pairingTableModel extends AbstractTableModel {
         current_round_list.add_pairing(pairing);
         fireTableRowsInserted(rowCount, rowCount);
         
+    }
+    
+    public void make_vp_totals() {
+        for (int i=0; i < round_pairings.size(); i++) {
+            PairingListClass round = round_pairings.get(i);
+            round.make_vp_totals(i);
+        }
     }
     
     public String getPairingsText(int round_no) {

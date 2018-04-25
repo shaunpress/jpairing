@@ -16,6 +16,7 @@ public class PairingListClass {
 
     int round = 0;
     ArrayList<PairingClass> pairings = new ArrayList<PairingClass>();
+    ArrayList vp_total = new ArrayList();
     
     public PairingListClass(int new_round) {
         round = new_round;
@@ -28,6 +29,37 @@ public class PairingListClass {
     void update_totals(int round_no) {
         for (PairingClass round_pairing:pairings) {
             round_pairing.update_total(round_no);
+        }
+    }
+    
+    int get_vp_total(int tableNo) {
+        int total = 0;
+        for (PairingClass data:pairings) {
+            if (data.getBoardNo() == tableNo) {
+                total += data.getVictory_points();
+                
+            }
+        }
+        
+        return total;
+    }
+    
+    void update_vp_total(int round, int tableNo) {
+        int vpTotal = get_vp_total(tableNo);
+        for (PairingClass data:pairings) {
+            if (data.getBoardNo() == tableNo) {
+                data.getPlayer().set_vp_total_total(round, vpTotal);
+            }
+        }
+    }
+    
+    void make_vp_totals(int round) {
+        // Sure this fails!
+        int board = 0;
+        vp_total.clear();
+        for (PairingClass data:pairings) {
+            board = data.getBoardNo();
+            update_vp_total(round, board);           
         }
     }
     

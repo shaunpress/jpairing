@@ -1,0 +1,107 @@
+<html>
+<h2> JPairing Help Page </h2>
+    <h3> A brief help page for JPairing 1.0 </h3>
+    <b> Introduction</b><p>
+    JPairing is a program designed for the management of multi player games.
+    It manage player lists, keeps track of reults and produces pairings for each round
+    It is designed for euro style boardgames, where players score both Match Points (MP) and Victory Points (VP)<p>
+    <h3> Menu Description</h3><p>
+    <h4> File Menu </h4><p>
+    1. New Tournament<p>
+    New tournament allows you to enter the settings of a newly created event. A dialog box will ask you for the
+    Tournament Name, Tournament Venue, Date of start and finish, and Number of rounds. <p>
+    <b>** Warning:</b> Creating a new event (by entering data and clicking OK) will earse the current event, so make sure you
+    save the current event first <p>
+    2. Open Tournament <p>
+    Load an existing tournament from an aps (Abstract Pairing System) file. Overwrites current event<p>
+    3. Save Tournament <p>
+    Writes the data from a current event to an aps file<p>
+    4. Modify Current Tournament <p>
+    Allows you to change the tournament settings (Name, number of rounds etc). Does not effect the data for the current event<p>
+
+    <h4> Standings Menu </h4><p>
+    1. Standings<p>
+    Shows the players in standing order. The order for standings is Total Match Points, Total Victory Points,
+    Percentage of Victory Points against Total Victory Points for each board played<p>
+    2. Crosstable<p>
+    Shows the round by round results for each player. For each round the crosstable shows Board number, MP, VP and Board VP
+    total. Order is the same as Standings order<p>
+    3. Pairings<p>
+    Shows the pairings for the currently selected round. Ordered by Board number<p>
+
+    <h4> Extras Menu</h4><p>
+    1. Delete current round <p>
+    If a round has been paired by accident (eg an error is an previous result has been discovered), choosing this will erase
+    the most recent round. Note: The most recent round must be the current active round as shown on the pairings page.<p>
+    2. Export tournament in csv format<p>
+    Exports the tournament data to a file which allows the tournament to be opened in a spreadsheet. <p>
+
+    <h4> Help Menu</h4><p>
+    1. Help<p>
+    Opens this dialog!<p>
+    2. About<p>
+    Shows details about program inlcuding contact detail for author (shaunpress@gmail.com)<p>
+
+    <h3> Page Tab Descriptions</h3><p>
+    <h4>Player List</h4><p>
+    The Player List Page is where you enter and modify player data. For a new tournament this page is blank, while
+    for an existing tournament this will contain the list of players.<p>
+    <b>Add Player</b><p>
+    The Add Player button creates an empty record for a new player. Enter a player name and rating in the respective fields (NB
+    The notes field can be left blank and is intended for future use). The rating can either be from a torunament rating system
+    or simply decided by the tournament director (it defaults to 0). It is used to provide an initial order for round 1 pairings.
+    The data entry is free form so quality control is up to the user<p>
+    Players can be "late entered" for the tournament (ie after the first round has been paired).
+    Late entered players will be placed on board '0' and allocated 0 points for each unplayed round (NB this can be modifed later)<p>
+    <b>Delete Player</b><p>
+    Before the tournament starts a player can be removed from the entry list (eg if they are a duplicate entry, or are unable to attend)
+    Cick on the row of the player to be removed and push the Delete Player button. <p>
+    NB This option is unavailable after the first round has been paired<p>
+    <b>Player Availibility</b><p>
+    If a player is unable to play in a particular round, right click on the player concerned. This brings up the
+    Player Availibility dialog. Each round that the player will be paired for has a tick. To remove a player from
+    the pairings just click on the box (ie untick it) and press OK. The player will then be placed on Board '0'
+    for that round. You are still able to enter a score for that player via the Pairings page if needed. (NB This has no
+    effect for previously played rounds)<p>
+
+    <h4>Pairing Page</h4><p>
+    The Pairing Page allows you to enter the results for each round, and do pairings for the next round. The page will show
+    the pairings for the current round (as signified by the spinner value at the bottom of the page). Results can be entered
+    for each player in Match Points and Victory Points Columns. Results are updated when you push the Update button or
+    change the current active round.<p>
+    <b>Automatic</b><p>
+    Produces the pairings for the next round. NB The current active round must be the most recent round of the tournament for this
+    option to be available.<p>
+    <b>Warning:</b>You can pair the next round before all results of the previous rounds have been entered. If this is done
+    by mistake, use the Delete Current Round menu option (under Extras)<p>
+    <b>Modify</b><p>
+    If there is a need to change an existing pairing, the Modify button will show a dialog to let this happen. The dialog will
+    show a set of existing pairings, for the current active round. To modify a pairing, highlight the pairing and choose
+    Remove Player. This transfers the player to the right hand list. The enter the Board Number and Player ID for the player and
+    choose Add Player to return them to the pairing list. To accept the set of modified pairings push Accept Pairings
+    (NB All players must be paired first). If you wish to leave the pairings as they were just choose Cancel<p>
+    <b>Update</b><p>
+    This button updates the current scores and results. Use it if you want to see standings based on part results. Also use this
+    if you are saving the data partway through a round<p>
+    <b>Print</b><p>
+    Allows you to print the current set of pairings<p>
+    <b>Active Round</b><p>
+    The Active Round Spinner sets the current round. To pair the next round (or to show current standings) set it to the last paired round.
+    To modify results or pairings for previous rounds simply choose a previous round and select the appropriate action<p>
+
+    <h4>Output</h4><p>
+    The Output page shows Standings, Crosstables and Pairings (All described in the menu sction). <p>
+    <b>Print</b><p>
+    Sends the current output view to the printer. Opens a dialog to allow you so select which printer you use<p>
+    Note: As the output windows are editable, you can add your own information before printing the content<p>
+
+    <h3>Pairing System</h3><p>
+    The pairing system for PyPairing 1.2 is a simple ordered pairing system. For the first round the playsr are sorted in rating
+    order and placed on the boards according to the formula Player 1 on board 1, Player 2 on 2, down to board N.
+    Then Player N+1 goes on board 1 etc For subsequent rounds the players are ordered by Match Points then Victory Points. The top 4
+    players are on board 1, the next 4 on board 2 etc<p>
+    Players can play the same opponents more than once.
+    If the number of players being paired are not a multiple of 4, the program produces a set of 3 player pairings at the end
+    to give every available player a game (ie 3 players left over = 1 3 player board, 2 players = 2 3 player board, 1 player =
+    3 3 player boards).
+</html>
