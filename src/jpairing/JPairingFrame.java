@@ -213,6 +213,11 @@ public class JPairingFrame extends javax.swing.JFrame implements TableModelListe
         });
 
         printPairButton.setText("Print");
+        printPairButton.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                printPairButtonActionPerformed(evt);
+            }
+        });
 
         jLabel1.setText("Current Round");
 
@@ -811,6 +816,33 @@ public class JPairingFrame extends javax.swing.JFrame implements TableModelListe
         // TODO add your handling code here:
         JOptionPane.showMessageDialog(null, "To modify pairing, simply change the Board No of selected player(s), then press Update button");
     }//GEN-LAST:event_modifyPairButtonActionPerformed
+
+    private void printPairButtonActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_printPairButtonActionPerformed
+        // TODO add your handling code here:
+        if (current_round < 1) {
+            return;
+        }
+        PrinterJob job = PrinterJob.getPrinterJob();
+        String output_text = "Board \tPlayer \tCurrent Score \tMP \tVP\n";
+        output_text += "=====================================================\n";
+        output_text += pairingDataModel.getPairingsText(current_round);       
+        String[] text_lines =  makePrinterText(output_text).split("\n");
+        job.setPrintable(new OutputPrinter(text_lines));
+        boolean doPrint = job.printDialog();
+        if (doPrint) {
+            try {
+                job.print();
+            } 
+            catch (PrinterException e) {
+        // The job did not successfully
+        // complete
+            }
+            
+        }
+            
+        
+        
+    }//GEN-LAST:event_printPairButtonActionPerformed
 
     private void writeCSVFile(Path path) {
         try {
