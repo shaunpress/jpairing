@@ -235,7 +235,7 @@ public class playerTableModel extends AbstractTableModel {
                 output_string += standing_info.player.get_round_result(i);
             }
             output_string += Float.toString(standing_info.score_total)+"\t"+Float.toString(standing_info.vp_total)+"\t";
-            output_string += String.format("%.2f",standing_info.percent)+"\t";
+            output_string += String.format("%.2f",standing_info.percent)+" \t";
             output_string += Integer.toString(standing_info.wins)+"\n";
             rank++;
             
