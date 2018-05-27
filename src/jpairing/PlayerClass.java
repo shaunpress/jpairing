@@ -204,7 +204,7 @@ public class PlayerClass {
         
         output_string += Integer.toString(result.tableNo)+" ";
         output_string += Float.toString(result.score)+"-"+Float.toString(result.vpScore)+" ";
-        output_string += Float.toString(result.vpTotal)+"\t";
+        output_string += Float.toString(result.vpTotal)+" \t";
         
         
         return output_string;
