@@ -232,7 +232,7 @@ public class JPairingFrame extends javax.swing.JFrame implements TableModelListe
         jPanel2.setLayout(jPanel2Layout);
         jPanel2Layout.setHorizontalGroup(
             jPanel2Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-            .addComponent(jScrollPane3, javax.swing.GroupLayout.DEFAULT_SIZE, 895, Short.MAX_VALUE)
+            .addComponent(jScrollPane3, javax.swing.GroupLayout.PREFERRED_SIZE, 0, Short.MAX_VALUE)
             .addGroup(jPanel2Layout.createSequentialGroup()
                 .addContainerGap()
                 .addGroup(jPanel2Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING, false)
@@ -524,6 +524,10 @@ public class JPairingFrame extends javax.swing.JFrame implements TableModelListe
         
         if (returnVal == JFileChooser.APPROVE_OPTION) {
             File file = fc.getSelectedFile();
+            String filePath = file.getAbsolutePath();
+            if (!filePath.endsWith(".aps")) {
+                file = new File(filePath+".aps");
+            }
             
             // Handle file save here
             Path path = file.toPath();
@@ -605,6 +609,7 @@ public class JPairingFrame extends javax.swing.JFrame implements TableModelListe
         final JFileChooser fc = new JFileChooser();
         FileNameExtensionFilter filter = new FileNameExtensionFilter(
         "Abstract Pairing System", "aps");
+        // fc.addChoosableFileFilter(filter);
         fc.setFileFilter(filter);
         
         int returnVal = fc.showOpenDialog(this);
@@ -797,6 +802,10 @@ public class JPairingFrame extends javax.swing.JFrame implements TableModelListe
         
         if (returnVal == JFileChooser.APPROVE_OPTION) {
             File file = fc.getSelectedFile();
+            String filePath = file.getAbsolutePath();
+            if (!filePath.endsWith(".csv")) {
+                file = new File(filePath+".csv");
+            }
             
             // Handle file save here
             Path path = file.toPath();
@@ -909,8 +918,8 @@ public class JPairingFrame extends javax.swing.JFrame implements TableModelListe
                 int player_id = Integer.parseInt(result_data[0]);
                 for (int i=1; i < result_data.length; i++) {
                     String[] round_data = result_data[i].split(";");
-                    playerDataModel.addPlayerResult(player_id+1, i, round_data);
-                    pairingDataModel.loadPairing(playerDataModel.get_player(player_id),i,round_data);
+                    playerDataModel.addPlayerResult(player_id, i, round_data);
+                    pairingDataModel.loadPairing(playerDataModel.get_player(player_id-1),i,round_data);
                     
                     
                 }
