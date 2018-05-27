@@ -123,7 +123,13 @@ public class pairingTableModel extends AbstractTableModel {
         }
         pairing.setPlayer(player);
         pairing.setMatch_points(Float.parseFloat(round_data[1]));
+        try {
         pairing.setVictory_points(Integer.parseInt(round_data[2]));
+        }
+        catch (Exception e) {
+            float vp = Float.parseFloat(round_data[2]);
+            pairing.setVictory_points((int)vp);
+        }
         
         PairingListClass current_round_list = round_pairings.get(round_no-1);
         int rowCount = getRowCount();
