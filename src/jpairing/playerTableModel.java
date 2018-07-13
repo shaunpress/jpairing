@@ -244,6 +244,19 @@ public class playerTableModel extends AbstractTableModel {
         return output_string;
     }
     
+    public String player_list() {
+        String output_string = "";
+        
+        int rank = 0;
+        Collections.sort(data,new byRating());
+        for (PlayerClass player:data) {
+            rank++;
+            
+            output_string += Integer.toString(rank)+"\t"+player.getPlayerName()+"\t"+player.getRating()+"\n";
+        }
+        return output_string;
+    }
+    
     public String player_standing_list(int round_no) {
         ArrayList<StandingDetail> standing_list = new ArrayList<StandingDetail>();
         String output_string = "";
@@ -294,6 +307,23 @@ public class playerTableModel extends AbstractTableModel {
     }
     
     // Sort functions
+    class byRating implements Comparator<PlayerClass> {
+        @Override
+        public int compare(PlayerClass player1, PlayerClass player2) {
+            
+            if (player1.getRating() > player2.getRating()) {
+                return -1;
+            }
+            
+            if (player2.getRating() > player1.getRating()) {
+                return 1;
+            }
+            
+            return player1.getPlayerName().compareTo(player2.getPlayerName());
+            
+        }
+    }
+    
     class byStanding implements Comparator<StandingDetail> {
         @Override
         public int compare(StandingDetail player1, StandingDetail player2) {

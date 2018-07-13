@@ -88,6 +88,7 @@ public class JPairingFrame extends javax.swing.JFrame implements TableModelListe
         jPanel4 = new javax.swing.JPanel();
         addPlayerButton = new javax.swing.JButton();
         deletePlayerButton = new javax.swing.JButton();
+        printPlayersButton = new javax.swing.JButton();
         jPanel2 = new javax.swing.JPanel();
         jScrollPane3 = new javax.swing.JScrollPane();
         jTable2 = new javax.swing.JTable();
@@ -164,6 +165,13 @@ public class JPairingFrame extends javax.swing.JFrame implements TableModelListe
             }
         });
 
+        printPlayersButton.setText("Print");
+        printPlayersButton.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                printPlayersButtonActionPerformed(evt);
+            }
+        });
+
         javax.swing.GroupLayout jPanel4Layout = new javax.swing.GroupLayout(jPanel4);
         jPanel4.setLayout(jPanel4Layout);
         jPanel4Layout.setHorizontalGroup(
@@ -172,7 +180,9 @@ public class JPairingFrame extends javax.swing.JFrame implements TableModelListe
                 .addComponent(addPlayerButton, javax.swing.GroupLayout.PREFERRED_SIZE, 106, javax.swing.GroupLayout.PREFERRED_SIZE)
                 .addGap(18, 18, 18)
                 .addComponent(deletePlayerButton, javax.swing.GroupLayout.PREFERRED_SIZE, 100, javax.swing.GroupLayout.PREFERRED_SIZE)
-                .addGap(0, 0, Short.MAX_VALUE))
+                .addGap(18, 18, 18)
+                .addComponent(printPlayersButton)
+                .addGap(0, 580, Short.MAX_VALUE))
         );
         jPanel4Layout.setVerticalGroup(
             jPanel4Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
@@ -180,7 +190,8 @@ public class JPairingFrame extends javax.swing.JFrame implements TableModelListe
                 .addContainerGap()
                 .addGroup(jPanel4Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
                     .addComponent(addPlayerButton)
-                    .addComponent(deletePlayerButton))
+                    .addComponent(deletePlayerButton)
+                    .addComponent(printPlayersButton))
                 .addContainerGap(17, Short.MAX_VALUE))
         );
 
@@ -453,7 +464,7 @@ public class JPairingFrame extends javax.swing.JFrame implements TableModelListe
         );
         layout.setVerticalGroup(
             layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-            .addComponent(jTabbedPane1, javax.swing.GroupLayout.DEFAULT_SIZE, 754, Short.MAX_VALUE)
+            .addComponent(jTabbedPane1, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
         );
 
         pack();
@@ -497,6 +508,9 @@ public class JPairingFrame extends javax.swing.JFrame implements TableModelListe
         int rounds = 0;
         if (null != tournamentDetails) {
             rounds = tournamentDetails.getTotal_rounds();
+        } else {
+            JOptionPane.showMessageDialog(null, "Warning: Tournament has not been created");
+            return;
         }
         playerDataModel.addBlankRow();
     }//GEN-LAST:event_addPlayerButtonActionPerformed
@@ -853,6 +867,27 @@ public class JPairingFrame extends javax.swing.JFrame implements TableModelListe
         
     }//GEN-LAST:event_printPairButtonActionPerformed
 
+    private void printPlayersButtonActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_printPlayersButtonActionPerformed
+        // TODO add your handling code here:
+        PrinterJob job = PrinterJob.getPrinterJob();
+        String output_text = "Rank \tPlayer \tRating\n";
+        output_text += playerDataModel.player_list();
+        
+        String[] text_lines =  makePrinterText(output_text).split("\n");
+        job.setPrintable(new OutputPrinter(text_lines));
+        boolean doPrint = job.printDialog();
+        if (doPrint) {
+            try {
+                job.print();
+            } 
+            catch (PrinterException e) {
+        // The job did not successfully
+        // complete
+            }
+            
+        }
+    }//GEN-LAST:event_printPlayersButtonActionPerformed
+
     private void writeCSVFile(Path path) {
         try {
             BufferedWriter out_file = Files.newBufferedWriter(path, StandardOpenOption.CREATE);
@@ -1073,6 +1108,7 @@ public class JPairingFrame extends javax.swing.JFrame implements TableModelListe
     private javax.swing.JTable playerDataTable;
     private javax.swing.JButton printOutputButton;
     private javax.swing.JButton printPairButton;
+    private javax.swing.JButton printPlayersButton;
     private javax.swing.JSpinner roundSpinner;
     private javax.swing.JButton standingsOutputButton;
     private javax.swing.JButton updatePairButton;

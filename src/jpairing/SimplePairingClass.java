@@ -153,6 +153,23 @@ public class SimplePairingClass {
             return 0;
         }
     };
+    
+    class byRating implements Comparator<PlayerClass> {
+        @Override
+        public int compare(PlayerClass player1, PlayerClass player2) {
+            
+            if (player1.getRating() > player2.getRating()) {
+                return -1;
+            }
+            
+            if (player2.getRating() > player1.getRating()) {
+                return 1;
+            }
+            
+            return player1.getPlayerName().compareTo(player2.getPlayerName());
+            
+        }
+    }
         
 
 
