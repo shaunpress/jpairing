@@ -102,6 +102,7 @@ public class JPairingFrame extends javax.swing.JFrame implements TableModelListe
         standingsOutputButton = new javax.swing.JButton();
         crosstableOutputPrint = new javax.swing.JButton();
         pairingsOutputButton = new javax.swing.JButton();
+        playerOutputButton = new javax.swing.JButton();
         printOutputButton = new javax.swing.JButton();
         jScrollPane2 = new javax.swing.JScrollPane();
         jTextPane1 = new javax.swing.JTextPane();
@@ -182,7 +183,7 @@ public class JPairingFrame extends javax.swing.JFrame implements TableModelListe
                 .addComponent(deletePlayerButton, javax.swing.GroupLayout.PREFERRED_SIZE, 100, javax.swing.GroupLayout.PREFERRED_SIZE)
                 .addGap(18, 18, 18)
                 .addComponent(printPlayersButton)
-                .addGap(0, 580, Short.MAX_VALUE))
+                .addGap(0, 140, Short.MAX_VALUE))
         );
         jPanel4Layout.setVerticalGroup(
             jPanel4Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
@@ -299,6 +300,13 @@ public class JPairingFrame extends javax.swing.JFrame implements TableModelListe
             }
         });
 
+        playerOutputButton.setText("Player List");
+        playerOutputButton.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                playerOutputButtonActionPerformed(evt);
+            }
+        });
+
         printOutputButton.setText("Print");
         printOutputButton.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
@@ -319,9 +327,11 @@ public class JPairingFrame extends javax.swing.JFrame implements TableModelListe
                 .addComponent(crosstableOutputPrint)
                 .addGap(18, 18, 18)
                 .addComponent(pairingsOutputButton)
-                .addGap(18, 18, 18)
+                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
+                .addComponent(playerOutputButton)
+                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, 14, Short.MAX_VALUE)
                 .addComponent(printOutputButton)
-                .addGap(0, 555, Short.MAX_VALUE))
+                .addContainerGap())
             .addComponent(jScrollPane2)
         );
         jPanel3Layout.setVerticalGroup(
@@ -331,10 +341,11 @@ public class JPairingFrame extends javax.swing.JFrame implements TableModelListe
                     .addComponent(standingsOutputButton)
                     .addComponent(crosstableOutputPrint)
                     .addComponent(pairingsOutputButton)
-                    .addComponent(printOutputButton))
+                    .addComponent(printOutputButton)
+                    .addComponent(playerOutputButton))
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                .addComponent(jScrollPane2, javax.swing.GroupLayout.PREFERRED_SIZE, 645, javax.swing.GroupLayout.PREFERRED_SIZE)
-                .addGap(0, 52, Short.MAX_VALUE))
+                .addComponent(jScrollPane2, javax.swing.GroupLayout.DEFAULT_SIZE, 686, Short.MAX_VALUE)
+                .addContainerGap())
         );
 
         jTabbedPane1.addTab("Output", jPanel3);
@@ -888,6 +899,14 @@ public class JPairingFrame extends javax.swing.JFrame implements TableModelListe
         }
     }//GEN-LAST:event_printPlayersButtonActionPerformed
 
+    private void playerOutputButtonActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_playerOutputButtonActionPerformed
+        // TODO add your handling code here:
+        String output_text = "Rank \tPlayer \tRating\n";
+        output_text += playerDataModel.player_list();
+        
+        jTextPane1.setText(makePrinterText(output_text));
+    }//GEN-LAST:event_playerOutputButtonActionPerformed
+
     private void writeCSVFile(Path path) {
         try {
             BufferedWriter out_file = Files.newBufferedWriter(path, StandardOpenOption.CREATE);
@@ -1106,6 +1125,7 @@ public class JPairingFrame extends javax.swing.JFrame implements TableModelListe
     private javax.swing.JButton modifyPairButton;
     private javax.swing.JButton pairingsOutputButton;
     private javax.swing.JTable playerDataTable;
+    private javax.swing.JButton playerOutputButton;
     private javax.swing.JButton printOutputButton;
     private javax.swing.JButton printPairButton;
     private javax.swing.JButton printPlayersButton;
