@@ -160,9 +160,14 @@ public class playerTableModel extends AbstractTableModel {
     
     public void deleteRow(int rowNo) {
         if (rowNo < data.size()) {
+            PlayerClass.setNoOfPlayers(PlayerClass.getNoOfPlayers()-1);
+            for (PlayerClass player:data) {
+                if (player.getPairingId() > rowNo) {
+                    player.setPairingId(player.getPairingId()-1);
+                }
+            }
             fireTableRowsDeleted(rowNo,rowNo);
             data.remove(rowNo);
-            
         }
     }
     
